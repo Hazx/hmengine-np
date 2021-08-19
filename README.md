@@ -1,6 +1,6 @@
-# 简介
+# HMEngine-np
 
-这是一个 PHP Server 的 Docker 镜像，如果你有需要可以拿去参考使用。
+HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以拿去参考使用。
 
 # 目录说明
 
