@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# 覆盖WEB目录及文件权限
+if [ -d "/home/web" ];then
+    chown -R www:www /home/web
+fi
+if [ -d "/home/web_log" ];then
+    chown -R root:root /home/web_log
+    chmod -R 764 /home/web_log
+fi
+
+# 判断存在并删除pid
+if [ -e "/root/web_server/nginx/logs/nginx.pid" ];then
+    rm -f /root/web_server/nginx/logs/nginx.pid
+fi
+if [ -e "/root/web_server/php/var/run/php-fpm.pid" ];then
+    rm -f /root/web_server/php/var/run/php-fpm.pid
+fi
+
+# Start Nginx
+/root/web_server/nginx/sbin/nginx -c /root/web_server/nginx/conf/nginx.conf
+if [ "$?" != 0 ] ; then
+    echo "Nginx Start Failed."
+fi
+
+# Start PHP8
+/root/web_server/php/sbin/php-fpm --daemonize --fpm-config /root/web_server/php/etc/php-fpm.conf --pid /root/web_server/php/var/run/php-fpm.pid
+if [ "$?" != 0 ] ; then
+    echo "PHP-FPM Start Failed."
+fi
+
+# 容器保活
+/root/web_server/keep
