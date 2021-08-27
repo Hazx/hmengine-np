@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.0"
+LABEL Version="2.1"
 
 ARG make_j_arg
 
@@ -11,8 +11,8 @@ ADD save /root/hazx/save.sh
 
 RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo ;\
     yum makecache -y ;\
-    mkdir /root/web_server ;\
-    chmod -R 755 /root/web_server ;\
+    mkdir /web_server ;\
+    chmod -R 755 /web_server ;\
     export make_j=${make_j_arg} ;\
     # Nginx - 安装依赖
     yum install -y openssl openssl-devel libxml2 libxml2-devel curl curl-devel libjpeg libjpeg-devel sqlite sqlite-devel libpng libpng-devel freetype-devel gmp-devel libevent libevent-devel gcc gcc-c++ unzip python-docutils libedit libedit-devel zlib zlib-devel git zip screen vim pcre-devel readline libstdc++-devel automake autoconf wget unzip ;\
@@ -25,7 +25,7 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     unzip yunsuo-plugin-20210811.zip ;\
     cd /root/hazx/nginx/nginx-1.20.1/ ;\
     ./configure \
-        --prefix=/root/web_server/nginx \
+        --prefix=/web_server/nginx \
         --with-openssl=/root/hazx/nginx/openssl-1.1.1k \
         --with-pcre=/root/hazx/nginx/pcre-8.45 \
         --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
@@ -90,7 +90,7 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     tar zxvf php-8.0.9.tar.gz ;\
     cd php-8.0.9 ;\
     ./configure \
-        --prefix=/root/web_server/php \
+        --prefix=/web_server/php \
         --with-config-file-path=/root/php/etc \
         --enable-fpm \
         --enable-bcmath \
@@ -122,9 +122,9 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
         --disable-fileinfo ;\
     make -j${make_j:-1} ;\
     make install ;\
-    cp ./php.ini-production /root/web_server/php/etc/php.ini ;\
-    mv /root/web_server/php/etc/php-fpm.conf.default /root/web_server/php/etc/php-fpm.conf ;\
-    mv /root/web_server/php/etc/php-fpm.d/www.conf.default /root/web_server/php/etc/php-fpm.d/www.conf ;\
+    cp ./php.ini-production /web_server/php/etc/php.ini ;\
+    mv /web_server/php/etc/php-fpm.conf.default /web_server/php/etc/php-fpm.conf ;\
+    mv /web_server/php/etc/php-fpm.d/www.conf.default /web_server/php/etc/php-fpm.d/www.conf ;\
     # 清理
     yum clean all ;\
     rm -rf /var/cache/yum ;\

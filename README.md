@@ -2,6 +2,8 @@
 
 HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以拿去参考使用。
 
+对应镜像及版本：`hazx/hmengine-np:2.1`
+
 # 目录说明
 
 - `1.Make`：编译阶段需要用到的目录，若你不需要打包成Docker镜像，而是只使用编译好的二进制程序，可以只使用此目录。
@@ -21,7 +23,7 @@ HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 
 ```shell
 ./configure \
---prefix=/root/web_server/nginx \
+--prefix=/web_server/nginx \
 --with-openssl=/root/hazx/nginx/openssl-1.1.1k \
 --with-pcre=/root/hazx/nginx/pcre-8.45 \
 --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
@@ -42,7 +44,7 @@ Nginx默认编译了云锁的插件，可以配合云锁的软件进行流量过
 
 ```shell
 ./configure \
---prefix=/root/web_server/php \
+--prefix=/web_server/php \
 --with-config-file-path=/root/php/etc \
 --enable-fpm \
 --enable-bcmath \
@@ -76,19 +78,19 @@ Nginx默认编译了云锁的插件，可以配合云锁的软件进行流量过
 
 # 使用镜像
 
-你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:2.0`，你也可以参照 [编译和打包](#编译和打包) 部分的说明自行编译和打包镜像。
+你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:2.1`，你也可以参照 [编译和打包](#编译和打包) 部分的说明自行编译和打包镜像。
 
 ## 需要做映射的内部路径
 
-- Nginx 配置目录：`/root/web_server/nginx/conf`
-- PHP 配置目录：`/root/web_server/php/etc`
+- Nginx 配置目录：`/web_server/nginx/conf`
+- PHP 配置目录：`/web_server/php/etc`
 - WEB 文件目录：`/home/web`（非必须设定此路径）
 - 日志文件目录：`/home/web_log`（非必须设定此路径）
 - mysql_sock 文件：`/home/mysql.sock`（非必须设定此路径）
 
 > 如果你需要改变 WEB、日志、sock 或其他路径映射，你需要注意修改 Nginx 及 PHP 配置文件的相应路径参数。
 
-> WEB 文件需要具备 `www:www` 归属权限，若映射到 `/home/web` 容器在启动时会自动处理权限。
+> WEB 文件需要具备 `1000:1000` 归属权限，若映射到 `/home/web` 容器在启动时会自动处理权限。
 
 ## 需要做映射的内部端口
 
@@ -101,12 +103,12 @@ Nginx默认编译了云锁的插件，可以配合云锁的软件进行流量过
 docker run -d \
     -p 80:80 \
     -p 443:443 \
-    -v /home/hmengine-np/3.Run/example_nginx:/root/web_server/nginx/conf \
-    -v /home/hmengine-np/3.Run/example_php:/root/web_server/php/etc \
+    -v /home/hmengine-np/3.Run/example_nginx:/web_server/nginx/conf \
+    -v /home/hmengine-np/3.Run/example_php:/web_server/php/etc \
     -v /home/hmengine-np/3.Run/example_website/web:/home/web \
     -v /home/hmengine-np/3.Run/example_website/web_log:/home/web_log \
     --name web_server \
-    hazx/hmengine-np:2.0
+    hazx/hmengine-np:2.1
 ```
 
 # 编译和打包
@@ -125,7 +127,7 @@ docker run -d \
 chmod +x start_make.sh && ./start_make.sh
 ```
 
-若你的主机是多核CPU，你可以使用多线程编译来加快编译速度。若你的CPU是4核8线程，你可以这样执行：
+若你的主机是多核CPU，你可以使用多线程编译来加快编译速度。假如你的CPU是4核8线程，你可以这样执行：
 
 ```shell
 chmod +x start_make.sh && ./start_make.sh 4
@@ -144,7 +146,10 @@ chmod +x start_make.sh && ./start_make.sh 4
 ```shell
 chmod +x start_make.sh && ./pkg_images.sh
 ```
-
+若想自定义镜像tag，你可以这样执行：
+```shell
+chmod +x start_make.sh && ./pkg_images.sh test:v1
+```
 
 
 

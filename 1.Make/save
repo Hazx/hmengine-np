@@ -1,13 +1,13 @@
 #!/bin/bash
 
 save_dir="/root/make_data"
-make_install_dir="/root/web_server"
+make_install_dir="/web_server"
 libzip_src_dir="/root/hazx/php8/libzip-1.7.3"
 
 # 导出Nginx编译内容
 cp -R ${make_install_dir}/nginx ${save_dir}/nginx
 mv ${save_dir}/nginx/html ${save_dir}/nginx_df_html
-sed -e 's/root\ \ \ html/root\ \/root\/web_server\/nginx_df_html\//' ${save_dir}/nginx/conf/nginx.conf > ${save_dir}/nginx/conf/nginx.conf.tmp
+sed -e 's/root\ \ \ html/root\ \/web_server\/nginx_df_html\//' ${save_dir}/nginx/conf/nginx.conf > ${save_dir}/nginx/conf/nginx.conf.tmp
 sed -e "1iuser\ root\;" ${save_dir}/nginx/conf/nginx.conf.tmp > ${save_dir}/nginx/conf/nginx.conf
 rm -f ${save_dir}/nginx/conf/nginx.conf.tmp
 

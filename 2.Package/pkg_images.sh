@@ -2,4 +2,9 @@
 
 rm -fr ./make_data
 cp -R ../1.Make/make_data ./make_data
-docker build -t hazx/hmengine-np:2.0 .
+
+if [[ $1 ]];then
+    docker build -t $1 .
+else
+    docker build -t hazx/hmengine-np:2.1 .
+fi
