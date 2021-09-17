@@ -30,11 +30,11 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     useradd -M -s /bin/false -g www www ;\
     chmod +x /web_server/start_webserver.sh ;\
     chmod +x /web_server/keep ;\
-    # 配置环境变量
-    echo -e '\nexport PATH=$PATH:/web_server/nginx/sbin:/web_server/php/sbin' >> /etc/profile ;\
     # 清理
     yum clean all ;\
     rm -rf /var/cache/yum
+
+ENV PATH "/web_server/nginx/sbin:/web_server/php/sbin:$PATH"
 
 CMD  /web_server/start_webserver.sh
 
