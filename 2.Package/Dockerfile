@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.1"
+LABEL Version="2.2"
 
 RUN mkdir /web_server ;\
     chmod -R 755 /web_server
@@ -13,6 +13,8 @@ ADD start_webserver /web_server/start_webserver.sh
 RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo ;\
     yum makecache -y ;\
     yum install -y libpng-devel libicu oniguruma ;\
+    mv /web_server/nginx/sbin/nginx /web_server/nginx/sbin/hmengine-n ;\
+    chmod +x /web_server/nginx/sbin/hmengine-n ;\
     # 安装libzip
     mv /web_server/libzip/lib/* /usr/local/lib64/ ;\
     chmod +x /web_server/libzip/exec/* ;\
@@ -28,6 +30,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     useradd -M -s /bin/false -g www www ;\
     chmod +x /web_server/start_webserver.sh ;\
     chmod +x /web_server/keep ;\
+    # 配置环境变量
+    echo -e '\nexport PATH=$PATH:/web_server/nginx/sbin:/web_server/php/sbin' >> /etc/profile ;\
     # 清理
     yum clean all ;\
     rm -rf /var/cache/yum

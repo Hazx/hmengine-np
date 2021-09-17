@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.1"
+LABEL Version="2.2"
 
 ARG make_j_arg
 
@@ -22,7 +22,6 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     tar zxvf openssl-1.1.1k.tar.gz ;\
     tar zxvf pcre-8.45.tar.gz ;\
     tar zxvf zlib-1.2.11.tar.gz ;\
-    unzip yunsuo-plugin-20210811.zip ;\
     cd /root/hazx/nginx/nginx-1.20.1/ ;\
     ./configure \
         --prefix=/web_server/nginx \
@@ -37,17 +36,9 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
         --with-http_secure_link_module \
         --with-http_realip_module \
         --with-http_dav_module \
-        --with-http_v2_module \
-        --add-module=/root/hazx/nginx/nginx-plugin-master ;\
-    # Nginx - 配置云锁插件
-    sed "/\-Wno\-unused\-parameter/s/$/ \-DHIGHERTHAN8/" objs/Makefile > objs/Makefile.tmp ;\
-    rm -f objs/Makefile ;\
-    mv objs/Makefile.tmp objs/Makefile ;\
-    sed -e "/\&ngx_http_yunsuo_module/d" objs/ngx_modules.c > objs/ngx_modules.c.tmp ;\
-    sed -e "/\&ngx_http_userid_filter_module/a \ \ \ \ \&ngx_http_yunsuo_module\," objs/ngx_modules.c.tmp > objs/ngx_modules.c ;\
-    rm -f objs/ngx_modules.c.tmp ;\
+        --with-http_v2_module ;\
     # Nginx - 配置Server标记
-    export sbj='HMEngine\ 2.0\ |\ Powered\ by\ Hazx.' ;\
+    export sbj='HMEngine\ |\ Powered\ by\ Hazx.' ;\
     sed -e "s/\"nginx\/\"\ NGINX_VERSION/\"${sbj}\"/" src/core/nginx.h > src/core/nginx.h.tmp ;\
     sed -e "s/\"NGINX\"/\"${sbj}\"/" src/core/nginx.h.tmp > src/core/nginx.h ;\
     rm -f src/core/nginx.h.tmp ;\
@@ -87,8 +78,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     ln -s /usr/local/lib64/libzip.so.5 /usr/lib64/libzip.so.5 ;\
     # PHP8 - 编译PHP8
     cd /root/hazx/php8 ;\
-    tar zxvf php-8.0.9.tar.gz ;\
-    cd php-8.0.9 ;\
+    tar zxvf php-8.0.10.tar.gz ;\
+    cd php-8.0.10 ;\
     ./configure \
         --prefix=/web_server/php \
         --with-config-file-path=/root/php/etc \

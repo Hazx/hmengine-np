@@ -18,7 +18,7 @@ if [ -e "/web_server/php/var/run/php-fpm.pid" ];then
 fi
 
 # Start Nginx
-/web_server/nginx/sbin/nginx -c /web_server/nginx/conf/nginx.conf
+/web_server/nginx/sbin/hmengine-n -c /web_server/nginx/conf/nginx.conf
 if [ "$?" != 0 ] ; then
     echo "Nginx Start Failed."
 fi
