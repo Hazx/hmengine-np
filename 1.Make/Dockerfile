@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.2"
+LABEL Version="2.3"
 
 ARG make_j_arg
 
@@ -19,13 +19,13 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     # Nginx - 配置Nginx
     cd /root/hazx/nginx/ ;\
     tar zxvf nginx-1.20.1.tar.gz ;\
-    tar zxvf openssl-1.1.1k.tar.gz ;\
+    tar zxvf openssl-1.1.1l.tar.gz ;\
     tar zxvf pcre-8.45.tar.gz ;\
     tar zxvf zlib-1.2.11.tar.gz ;\
     cd /root/hazx/nginx/nginx-1.20.1/ ;\
     ./configure \
         --prefix=/web_server/nginx \
-        --with-openssl=/root/hazx/nginx/openssl-1.1.1k \
+        --with-openssl=/root/hazx/nginx/openssl-1.1.1l \
         --with-pcre=/root/hazx/nginx/pcre-8.45 \
         --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
         --with-http_ssl_module \
@@ -65,8 +65,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     yum install -y autoconf libxml2 libxml2-devel openssl openssl-devel zlib-devel curl-devel libjpeg-devel libpng-devel freetype-devel mhash-devel mcrypt libmcrypt libmcrypt-devel libwebp libwebp-devel mhash mhash-devel gcc gcc-c++ make automake libsqlite3x libsqlite3x-devel libicu libicu-devel oniguruma oniguruma-devel cmake3 ;\
     # PHP8 - 编译libzip
     cd /root/hazx/php8 ;\
-    tar zxvf libzip-1.7.3.tar.gz ;\
-    cd libzip-1.7.3 ;\
+    tar zxvf libzip-1.8.0.tar.gz ;\
+    cd libzip-1.8.0 ;\
     mkdir build && cd build ;\
     ln -s /bin/cmake3 /bin/cmake ;\
     cmake3 .. ;\
@@ -78,8 +78,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     ln -s /usr/local/lib64/libzip.so.5 /usr/lib64/libzip.so.5 ;\
     # PHP8 - 编译PHP8
     cd /root/hazx/php8 ;\
-    tar zxvf php-8.0.10.tar.gz ;\
-    cd php-8.0.10 ;\
+    tar zxvf php-8.0.11.tar.gz ;\
+    cd php-8.0.11 ;\
     ./configure \
         --prefix=/web_server/php \
         --with-config-file-path=/root/php/etc \

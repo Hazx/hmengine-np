@@ -2,7 +2,7 @@
 
 save_dir="/root/make_data"
 make_install_dir="/web_server"
-libzip_src_dir="/root/hazx/php8/libzip-1.7.3"
+libzip_src_dir="/root/hazx/php8/libzip-1.8.0"
 
 # 导出Nginx编译内容
 cp -R ${make_install_dir}/nginx ${save_dir}/nginx

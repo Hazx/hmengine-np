@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.2"
+LABEL Version="2.3"
 
 RUN mkdir /web_server ;\
     chmod -R 755 /web_server
