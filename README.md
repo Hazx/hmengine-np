@@ -23,7 +23,7 @@ HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 ```shell
 ./configure \
 --prefix=/web_server/nginx \
---with-openssl=/root/hazx/nginx/openssl-1.1.1k \
+--with-openssl=/root/hazx/nginx/openssl-1.1.1l \
 --with-pcre=/root/hazx/nginx/pcre-8.45 \
 --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
 --with-http_ssl_module \
