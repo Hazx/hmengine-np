@@ -42,7 +42,7 @@ HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 ```shell
 ./configure \
 --prefix=/web_server/php \
---with-config-file-path=/root/php/etc \
+--with-config-file-path=/web_server/php/etc \
 --enable-fpm \
 --enable-bcmath \
 --enable-ftp \

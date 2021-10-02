@@ -82,7 +82,7 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     cd php-8.0.11 ;\
     ./configure \
         --prefix=/web_server/php \
-        --with-config-file-path=/root/php/etc \
+        --with-config-file-path=/web_server/php/etc \
         --enable-fpm \
         --enable-bcmath \
         --enable-ftp \
