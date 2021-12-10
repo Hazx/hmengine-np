@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.3"
+LABEL Version="2.4"
 
 ARG make_j_arg
 
@@ -18,11 +18,11 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     yum install -y openssl openssl-devel libxml2 libxml2-devel curl curl-devel libjpeg libjpeg-devel sqlite sqlite-devel libpng libpng-devel freetype-devel gmp-devel libevent libevent-devel gcc gcc-c++ unzip python-docutils libedit libedit-devel zlib zlib-devel git zip screen vim pcre-devel readline libstdc++-devel automake autoconf wget unzip ;\
     # Nginx - 配置Nginx
     cd /root/hazx/nginx/ ;\
-    tar zxvf nginx-1.20.1.tar.gz ;\
+    tar zxvf nginx-1.20.2.tar.gz ;\
     tar zxvf openssl-1.1.1l.tar.gz ;\
     tar zxvf pcre-8.45.tar.gz ;\
     tar zxvf zlib-1.2.11.tar.gz ;\
-    cd /root/hazx/nginx/nginx-1.20.1/ ;\
+    cd /root/hazx/nginx/nginx-1.20.2/ ;\
     ./configure \
         --prefix=/web_server/nginx \
         --with-openssl=/root/hazx/nginx/openssl-1.1.1l \
@@ -78,8 +78,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     ln -s /usr/local/lib64/libzip.so.5 /usr/lib64/libzip.so.5 ;\
     # PHP8 - 编译PHP8
     cd /root/hazx/php8 ;\
-    tar zxvf php-8.0.11.tar.gz ;\
-    cd php-8.0.11 ;\
+    tar zxvf php-8.0.13.tar.gz ;\
+    cd php-8.0.13 ;\
     ./configure \
         --prefix=/web_server/php \
         --with-config-file-path=/web_server/php/etc \

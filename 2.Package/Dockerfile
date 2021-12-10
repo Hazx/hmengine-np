@@ -1,14 +1,14 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.3"
+LABEL Version="2.4"
 
 RUN mkdir /web_server ;\
     chmod -R 755 /web_server
 
 ADD make_data /web_server
 ADD keep /web_server/
-ADD start_webserver /web_server/start_webserver.sh
+ADD webserver /web_server/webserver.sh
 
 RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo ;\
     yum makecache -y ;\
@@ -28,7 +28,7 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     # 配置权限
     groupadd www ;\
     useradd -M -s /bin/false -g www www ;\
-    chmod +x /web_server/start_webserver.sh ;\
+    chmod +x /web_server/webserver.sh ;\
     chmod +x /web_server/keep ;\
     # 清理
     yum clean all ;\
@@ -36,5 +36,5 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
 
 ENV PATH "/web_server/nginx/sbin:/web_server/php/sbin:$PATH"
 
-CMD  /web_server/start_webserver.sh
+CMD  /web_server/webserver.sh
 
