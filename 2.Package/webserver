@@ -20,13 +20,13 @@ fi
 # Start Nginx
 /web_server/nginx/sbin/hmengine-n -c /web_server/nginx/conf/nginx.conf
 if [ "$?" != 0 ] ; then
-    echo "Nginx Start Failed."
+    echo "[$(date +\"%Y%m%d-%H%M%S\")] Nginx Start Failed."
 fi
 
 # Start PHP8
 /web_server/php/sbin/php-fpm --daemonize --fpm-config /web_server/php/etc/php-fpm.conf --pid /web_server/php/var/run/php-fpm.pid
 if [ "$?" != 0 ] ; then
-    echo "PHP-FPM Start Failed."
+    echo "[$(date +\"%Y%m%d-%H%M%S\")] PHP-FPM Start Failed."
 fi
 
 # 容器保活
