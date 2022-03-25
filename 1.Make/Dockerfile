@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.4.1"
+LABEL Version="2.5"
 
 ARG make_j_arg
 
@@ -19,13 +19,13 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     # Nginx - 配置Nginx
     cd /root/hazx/nginx/ ;\
     tar zxvf nginx-1.20.2.tar.gz ;\
-    tar zxvf openssl-1.1.1l.tar.gz ;\
+    tar zxvf openssl-1.1.1n.tar.gz ;\
     tar zxvf pcre-8.45.tar.gz ;\
     tar zxvf zlib-1.2.11.tar.gz ;\
     cd /root/hazx/nginx/nginx-1.20.2/ ;\
     ./configure \
         --prefix=/web_server/nginx \
-        --with-openssl=/root/hazx/nginx/openssl-1.1.1l \
+        --with-openssl=/root/hazx/nginx/openssl-1.1.1n \
         --with-pcre=/root/hazx/nginx/pcre-8.45 \
         --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
         --with-http_ssl_module \
@@ -38,7 +38,7 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
         --with-http_dav_module \
         --with-http_v2_module ;\
     # Nginx - 配置Server标记
-    export sbj='HMEngine\ |\ Powered\ by\ Hazx.' ;\
+    export sbj='HMengine\ |\ Powered\ by\ Hazx.' ;\
     sed -e "s/\"nginx\/\"\ NGINX_VERSION/\"${sbj}\"/" src/core/nginx.h > src/core/nginx.h.tmp ;\
     sed -e "s/\"NGINX\"/\"${sbj}\"/" src/core/nginx.h.tmp > src/core/nginx.h ;\
     rm -f src/core/nginx.h.tmp ;\
@@ -78,8 +78,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     ln -s /usr/local/lib64/libzip.so.5 /usr/lib64/libzip.so.5 ;\
     # PHP8 - 编译PHP8
     cd /root/hazx/php8 ;\
-    tar zxvf php-8.0.13.tar.gz ;\
-    cd php-8.0.13 ;\
+    tar zxvf php-8.0.17.tar.gz ;\
+    cd php-8.0.17 ;\
     ./configure \
         --prefix=/web_server/php \
         --with-config-file-path=/web_server/php/etc \

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # 覆盖WEB目录及文件权限
-if [ -d "/home/web" ];then
-    chown -R www:www /home/web
-fi
+# if [ -d "/home/web" ];then
+#     chown -R www:www /home/web
+# fi
 if [ -d "/home/web_log" ];then
     chown -R root:root /home/web_log
     chmod -R 664 /home/web_log
