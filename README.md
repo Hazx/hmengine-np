@@ -1,8 +1,8 @@
-# HMEngine-np
+# HMengine-np
 
-HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以拿去参考使用。
+HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以拿去参考使用。
 
-对应镜像及版本：`hazx/hmengine-np:2.5`
+对应镜像及版本：`hazx/hmengine-np:2.6`
 
 # 目录说明
 
@@ -13,8 +13,8 @@ HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 # 镜像内容
 ## 软件版本
 
-- Nginx：1.20.2
-- PHP：8.0.17
+- Nginx：1.24.0
+- PHP：8.0.28
 
 ## 编译参数
 
@@ -23,7 +23,7 @@ HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 ```shell
 ./configure \
 --prefix=/web_server/nginx \
---with-openssl=/root/hazx/nginx/openssl-1.1.1n \
+--with-openssl=/root/hazx/nginx/openssl-1.1.1t \
 --with-pcre=/root/hazx/nginx/pcre-8.45 \
 --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
 --with-http_ssl_module \
@@ -75,7 +75,7 @@ HMEngine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 
 # 使用镜像
 
-你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:2.5`，你也可以参照 [编译和打包](#编译和打包) 部分的说明自行编译和打包镜像。
+你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:2.6`，你也可以参照 [编译和打包](#编译和打包) 部分的说明自行编译和打包镜像。
 
 ## 需要做映射的内部路径
 
@@ -106,7 +106,7 @@ docker run -d \
     -v /home/hmengine-np/3.Run/example_website/web_log:/home/web_log \
     --name web_server \
     --restart unless-stopped \
-    hazx/hmengine-np:2.5
+    hazx/hmengine-np:2.6
 ```
 
 # 编译和打包

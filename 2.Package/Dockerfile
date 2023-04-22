@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.5"
+LABEL Version="2.6"
 
 RUN mkdir /web_server ;\
     chmod -R 755 /web_server
@@ -10,8 +10,13 @@ ADD make_data /web_server
 ADD keep /web_server/
 ADD webserver /web_server/webserver.sh
 
-RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo ;\
-    yum makecache -y ;\
+RUN mkdir /etc/yum.repos.d/bk ;\
+    cp /etc/yum.repos.d/*.repo /etc/yum.repos.d/bk/ ;\
+    sed -e 's|^mirrorlist=|#mirrorlist=|g' -e 's|^#baseurl=http://mirror.centos.org|baseurl=https://mirrors.bfsu.edu.cn|g' -i /etc/yum.repos.d/CentOS-*.repo ;\
+    yum makecache ;\
+    yum install epel-release -y ;\
+    sed -e 's!^metalink=!#metalink=!g' -e 's!^#baseurl=!baseurl=!g' -e 's!//download\.fedoraproject\.org/pub!//mirrors.bfsu.edu.cn!g' -e 's!//download\.example/pub!//mirrors.bfsu.edu.cn!g' -e 's!http://mirrors!https://mirrors!g' -i /etc/yum.repos.d/epel*.repo ;\
+    yum makecache fast ;\
     yum install -y libpng-devel libicu oniguruma ;\
     mv /web_server/nginx/sbin/nginx /web_server/nginx/sbin/hmengine-n ;\
     chmod +x /web_server/nginx/sbin/hmengine-n ;\

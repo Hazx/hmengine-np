@@ -1,7 +1,7 @@
 FROM centos:7.9.2009
 
 LABEL maintainer="hazx632823367@gmail.com"
-LABEL Version="2.5"
+LABEL Version="2.6"
 
 ARG make_j_arg
 
@@ -9,8 +9,13 @@ ADD nginx /root/hazx/nginx
 ADD php8 /root/hazx/php8
 ADD save /root/hazx/save.sh
 
-RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo ;\
-    yum makecache -y ;\
+RUN mkdir /etc/yum.repos.d/bk ;\
+    cp /etc/yum.repos.d/*.repo /etc/yum.repos.d/bk/ ;\
+    sed -e 's|^mirrorlist=|#mirrorlist=|g' -e 's|^#baseurl=http://mirror.centos.org|baseurl=https://mirrors.bfsu.edu.cn|g' -i /etc/yum.repos.d/CentOS-*.repo ;\
+    yum makecache ;\
+    yum install epel-release -y ;\
+    sed -e 's!^metalink=!#metalink=!g' -e 's!^#baseurl=!baseurl=!g' -e 's!//download\.fedoraproject\.org/pub!//mirrors.bfsu.edu.cn!g' -e 's!//download\.example/pub!//mirrors.bfsu.edu.cn!g' -e 's!http://mirrors!https://mirrors!g' -i /etc/yum.repos.d/epel*.repo ;\
+    yum makecache fast ;\
     mkdir /web_server ;\
     chmod -R 755 /web_server ;\
     export make_j=${make_j_arg} ;\
@@ -18,14 +23,14 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     yum install -y openssl openssl-devel libxml2 libxml2-devel curl curl-devel libjpeg libjpeg-devel sqlite sqlite-devel libpng libpng-devel freetype-devel gmp-devel libevent libevent-devel gcc gcc-c++ unzip python-docutils libedit libedit-devel zlib zlib-devel git zip screen vim pcre-devel readline libstdc++-devel automake autoconf wget unzip ;\
     # Nginx - 配置Nginx
     cd /root/hazx/nginx/ ;\
-    tar zxvf nginx-1.20.2.tar.gz ;\
-    tar zxvf openssl-1.1.1n.tar.gz ;\
+    tar zxvf nginx-1.24.0.tar.gz ;\
+    tar zxvf openssl-1.1.1t.tar.gz ;\
     tar zxvf pcre-8.45.tar.gz ;\
     tar zxvf zlib-1.2.11.tar.gz ;\
-    cd /root/hazx/nginx/nginx-1.20.2/ ;\
+    cd /root/hazx/nginx/nginx-1.24.0/ ;\
     ./configure \
         --prefix=/web_server/nginx \
-        --with-openssl=/root/hazx/nginx/openssl-1.1.1n \
+        --with-openssl=/root/hazx/nginx/openssl-1.1.1t \
         --with-pcre=/root/hazx/nginx/pcre-8.45 \
         --with-zlib=/root/hazx/nginx/zlib-1.2.11 \
         --with-http_ssl_module \
@@ -39,25 +44,10 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
         --with-http_v2_module ;\
     # Nginx - 配置Server标记
     export sbj='HMengine\ |\ Powered\ by\ Hazx.' ;\
-    sed -e "s/\"nginx\/\"\ NGINX_VERSION/\"${sbj}\"/" src/core/nginx.h > src/core/nginx.h.tmp ;\
-    sed -e "s/\"NGINX\"/\"${sbj}\"/" src/core/nginx.h.tmp > src/core/nginx.h ;\
-    rm -f src/core/nginx.h.tmp ;\
-    sed -e "s/\"Server\:\ nginx\"\ CRLF\;/\"Server\:\ ${sbj}\"\ CRLF\;/" src/http/ngx_http_header_filter_module.c > src/http/ngx_http_header_filter_module.c.tmp1 ;\
-    sed -e "s/\"Server\:\ \"\ NGINX_VER\ CRLF\;/\"Server\:\ ${sbj}\"\ CRLF\;/" src/http/ngx_http_header_filter_module.c.tmp1 > src/http/ngx_http_header_filter_module.c.tmp2 ;\
-    sed -e "s/\"Server\:\ \"\ NGINX_VER_BUILD\ CRLF\;/\"Server\:\ ${sbj}\"\ CRLF\;/" src/http/ngx_http_header_filter_module.c.tmp2 > src/http/ngx_http_header_filter_module.c ;\
-    rm -f src/http/ngx_http_header_filter_module.c.tmp1 ;\
-    rm -f src/http/ngx_http_header_filter_module.c.tmp2 ;\
-    sed -e "s/<center>\"\ NGINX_VER\ \"<\/center>/<center>${sbj}<\/center>/" src/http/ngx_http_special_response.c > src/http/ngx_http_special_response.c.tmp1 ;\
-    sed -e "s/<center>\"\ NGINX_VER_BUILD\ \"<\/center>/<center>${sbj}<\/center>/" src/http/ngx_http_special_response.c.tmp1 > src/http/ngx_http_special_response.c.tmp2 ;\
-    sed -e "s/<center>nginx<\/center>/<center>${sbj}<\/center>/" src/http/ngx_http_special_response.c.tmp2 > src/http/ngx_http_special_response.c ;\
-    rm -f src/http/ngx_http_special_response.c.tmp1 ;\
-    rm -f src/http/ngx_http_special_response.c.tmp2 ;\
-    sed -e "s/nginx\/\$nginx_version/\"${sbj}\"/" conf/fastcgi.conf > conf/fastcgi.conf.tmp ;\
-    rm -fr conf/fastcgi.conf ;\
-    mv conf/fastcgi.conf.tmp conf/fastcgi.conf ;\
-    sed -e "s/nginx\/\$nginx_version/\"${sbj}\"/" conf/fastcgi_params > conf/fastcgi_params.tmp ;\
-    rm -fr conf/fastcgi_params ;\
-    mv conf/fastcgi_params.tmp conf/fastcgi_params ;\
+    sed -i "s/\"Server\:\ \"\ NGINX_VER\ CRLF\;/\"Server\:\ ${sbj}\"\ CRLF\;/" src/http/ngx_http_header_filter_module.c ;\
+    sed -i "s/<center>\"\ NGINX_VER\ \"<\/center>/<center>${sbj}<\/center>/" src/http/ngx_http_special_response.c ;\
+    sed -i "s/nginx\/\$nginx_version/\"${sbj}\"/" conf/fastcgi.conf ;\
+    sed -i "s/nginx\/\$nginx_version/\"${sbj}\"/" conf/fastcgi_params ;\
     # Nginx - 编译
     make -j${make_j:-1} ;\
     make install ;\
@@ -78,8 +68,8 @@ RUN curl -o /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.rep
     ln -s /usr/local/lib64/libzip.so.5 /usr/lib64/libzip.so.5 ;\
     # PHP8 - 编译PHP8
     cd /root/hazx/php8 ;\
-    tar zxvf php-8.0.17.tar.gz ;\
-    cd php-8.0.17 ;\
+    tar zxvf php-8.0.28.tar.gz ;\
+    cd php-8.0.28 ;\
     ./configure \
         --prefix=/web_server/php \
         --with-config-file-path=/web_server/php/etc \
