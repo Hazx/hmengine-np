@@ -1,0 +1,41 @@
+#!/bin/bash
+
+## 配置 yum 源
+sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e 's|^#baseurl=http://mirror.centos.org|baseurl=https://mirrors.bfsu.edu.cn|g' \
+    -i /etc/yum.repos.d/CentOS-*.repo
+yum makecache
+yum install epel-release -y
+sed -e 's!^metalink=!#metalink=!g' \
+    -e 's!^#baseurl=!baseurl=!g' \
+    -e 's!//download\.fedoraproject\.org/pub!//mirrors.bfsu.edu.cn!g' \
+    -e 's!//download\.example/pub!//mirrors.bfsu.edu.cn!g' \
+    -e 's!http://mirrors!https://mirrors!g' \
+    -i /etc/yum.repos.d/epel*.repo
+yum makecache fast
+
+## 安装依赖
+yum install -y libpng-devel libicu oniguruma
+
+## libzip
+mv /web_server/libzip/lib/* /usr/local/lib64/
+chmod a+x /web_server/libzip/exec/*
+mv /web_server/libzip/exec/* /usr/local/bin/
+mkdir -p /usr/local/lib64/pkgconfig
+mv /web_server/libzip/libzip.pc /usr/local/lib64/pkgconfig/libzip.pc
+ln -s /usr/local/lib64/libzip.so /usr/lib64/libzip.so
+ln -s /usr/local/lib64/libzip.so.5 /usr/lib64/libzip.so.5
+ln -s /usr/local/lib64/libzip.so.5.3 /usr/lib64/libzip.so.5.3
+ln -s /usr/local/lib64/pkgconfig/libzip.pc /usr/lib64/pkgconfig/libzip.pc
+rm -fr /web_server/libzip
+
+## 配置权限
+groupadd www
+useradd -M -s /bin/false -g www www
+chmod a+x /web_server/nginx/sbin/hmengine-n
+chmod a+x /web_server/webserver.sh
+chmod a+x /web_server/keep
+
+## 清理缓存
+yum clean all
+rm -rf /var/cache/yum
