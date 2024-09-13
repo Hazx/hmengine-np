@@ -1,40 +1,135 @@
 #!/bin/bash
 
-# 覆盖WEB目录及文件权限
-# if [ -d "/home/web" ];then
-#     chown -R www:www /home/web
-# fi
-if [ -d "/home/web_log" ];then
-    chown -R root:root /home/web_log
-    chmod -R 664 /home/web_log
+## 处理变量
+# NGINX_ONLY
+if [ ! -n "${NGINX_ONLY}" ];then
+    NGINX_ONLY=false
+fi
+# NGINX_WORKER_PROCESSES
+if [ ! -n "${NGINX_WORKER_PROCESSES}" ];then
+    sed -i "s/##worker_processes##/worker_processes\ 1/" /web_server/nginx/conf/nginx.conf
+else
+    if [[ ${NGINX_WORKER_PROCESSES} == "auto" ]];then
+        sed -i "s/##worker_processes##/worker_processes\ auto/" /web_server/nginx/conf/nginx.conf
+    else
+        sed -i "s/##worker_processes##/worker_processes\ ${NGINX_WORKER_PROCESSES}/" /web_server/nginx/conf/nginx.conf
+    fi
+fi
+# NGINX_GZIP
+if [ ! -n "${NGINX_GZIP}" ];then
+    sed -i "s/##gzip##/gzip\ on/" /web_server/nginx/conf/nginx.conf
+else
+    if [[ ${NGINX_GZIP} == "off" ]];then
+        sed -i "s/##gzip##/gzip\ off/" /web_server/nginx/conf/nginx.conf
+    else
+        sed -i "s/##gzip##/gzip\ on/" /web_server/nginx/conf/nginx.conf
+    fi
+fi
+# NGINX_PORT
+if [ ! -n "${NGINX_PORT}" ];then
+    sed -i "s/##port##/80/" /web_server/nginx/conf/nginx.conf
+else
+    sed -i "s/##port##/${NGINX_PORT}/" /web_server/nginx/conf/nginx.conf
+fi
+# PHP_PORT
+if [ ! -n "${PHP_PORT}" ];then
+    sed -i "s/##php_port##/9000/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##php_port##/9000/" /web_server/php/etc/php-fpm.d/www.conf
+else
+    sed -i "s/##php_port##/${PHP_PORT}/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##php_port##/${PHP_PORT}/" /web_server/php/etc/php-fpm.d/www.conf
+fi
+# PHP_MAX_CHILD
+if [ ! -n "${PHP_MAX_CHILD}" ];then
+    sed -i "s/##php_max_children##/5/" /web_server/php/etc/php-fpm.d/www.conf
+else
+    sed -i "s/##php_max_children##/${PHP_MAX_CHILD}/" /web_server/php/etc/php-fpm.d/www.conf
+fi
+# PHP_STR_SVC
+if [ ! -n "${PHP_STR_SVC}" ];then
+    sed -i "s/##php_start_servers##/2/" /web_server/php/etc/php-fpm.d/www.conf
+else
+    sed -i "s/##php_start_servers##/${PHP_STR_SVC}/" /web_server/php/etc/php-fpm.d/www.conf
+fi
+# PHP_MIN_SPARE
+if [ ! -n "${PHP_MIN_SPARE}" ];then
+    sed -i "s/##php_min_spare_servers##/1/" /web_server/php/etc/php-fpm.d/www.conf
+else
+    sed -i "s/##php_min_spare_servers##/${PHP_MIN_SPARE}/" /web_server/php/etc/php-fpm.d/www.conf
+fi
+# PHP_MAX_SPARE
+if [ ! -n "${PHP_MAX_SPARE}" ];then
+    sed -i "s/##php_max_spare_servers##/5/" /web_server/php/etc/php-fpm.d/www.conf
+else
+    sed -i "s/##php_max_spare_servers##/${PHP_MAX_SPARE}/" /web_server/php/etc/php-fpm.d/www.conf
+fi
+# PHP_MEM_LIMIT
+if [ ! -n "${PHP_MEM_LIMIT}" ];then
+    sed -i "s/##php_memory_limit##/256M/" /web_server/php/etc/php.ini
+else
+    sed -i "s/##php_memory_limit##/${PHP_MEM_LIMIT}/" /web_server/php/etc/php.ini
+fi
+# PHP_MAX_POST
+if [ ! -n "${PHP_MAX_POST}" ];then
+    sed -i "s/##php_post_max_size##/8M/" /web_server/php/etc/php.ini
+else
+    sed -i "s/##php_post_max_size##/${PHP_MAX_POST}/" /web_server/php/etc/php.ini
+fi
+# PHP_MAX_UPLOAD
+if [ ! -n "${PHP_MAX_UPLOAD}" ];then
+    sed -i "s/##php_upload_max_filesize##/64M/" /web_server/php/etc/php.ini
+else
+    sed -i "s/##php_upload_max_filesize##/${PHP_MAX_UPLOAD}/" /web_server/php/etc/php.ini
+fi
+# REQ_TIMEOUT
+if [ ! -n "${REQ_TIMEOUT}" ];then
+    sed -i "s/##nginx_client_body_timeout##/60/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_client_header_timeout##/60/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_fastcgi_connect_timeout##/60/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_fastcgi_send_timeout##/60/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_fastcgi_read_timeout##/60/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##php_request_terminate_timeout##/60/" /web_server/php/etc/php-fpm.d/www.conf
+    sed -i "s/##php_max_execution_time##/60/" /web_server/php/etc/php.ini
+    sed -i "s/##php_max_input_time##/60/" /web_server/php/etc/php.ini
+    sed -i "s/##php_default_socket_timeout##/60/" /web_server/php/etc/php.ini
+else
+    sed -i "s/##nginx_client_body_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_client_header_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_fastcgi_connect_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_fastcgi_send_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##nginx_fastcgi_read_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
+    sed -i "s/##php_request_terminate_timeout##/${REQ_TIMEOUT}/" /web_server/php/etc/php-fpm.d/www.conf
+    sed -i "s/##php_max_execution_time##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
+    sed -i "s/##php_max_input_time##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
+    sed -i "s/##php_default_socket_timeout##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
 fi
 
-# 判断存在并删除pid
-if [ -e "/web_server/nginx/logs/nginx.pid" ];then
-    rm -f /web_server/nginx/logs/nginx.pid
+
+## 判断存在并删除pid
+if [ -e "/web_server/logs/nginx.pid" ];then
+    rm -f /web_server/logs/nginx.pid
 fi
-if [ -e "/web_server/php/var/run/php-fpm.pid" ];then
-    rm -f /web_server/php/var/run/php-fpm.pid
+if [ -e "/web_server/logs/php-fpm.pid" ];then
+    rm -f /web_server/logs/php-fpm.pid
 fi
 
-# 启动 Nginx
+## 启动 PHP8
+if [[ ${NGINX_ONLY} == false ]];then
+    /web_server/php/sbin/php-fpm --daemonize -R \
+        --fpm-config /web_server/php/etc/php-fpm.conf \
+        --pid /web_server/logs/php-fpm.pid
+    if [ "$?" != 0 ] ; then
+        echo "[$(date +%Y%m%d-%H%M%S)] PHP-FPM Start Failed."
+    else
+        echo "[$(date +%Y%m%d-%H%M%S)] PHP-FPM Started."
+    fi
+fi
+
+## 启动 Nginx
+echo "[$(date +%Y%m%d-%H%M%S)] Nginx Starting."
 cd /web_server/nginx
-sbin/hmengine-n -c conf/nginx.conf
+sbin/hmengine-n -c conf/nginx.conf -g "daemon off;"
 if [ "$?" != 0 ] ; then
     echo "[$(date +%Y%m%d-%H%M%S)] Nginx Start Failed."
-else
-    echo "[$(date +%Y%m%d-%H%M%S)] Nginx Started."
+    sleep 10
 fi
-
-# 启动 PHP8
-/web_server/php/sbin/php-fpm --daemonize \
-    --fpm-config /web_server/php/etc/php-fpm.conf \
-    --pid /web_server/php/var/run/php-fpm.pid
-if [ "$?" != 0 ] ; then
-    echo "[$(date +%Y%m%d-%H%M%S)] PHP-FPM Start Failed."
-else
-    echo "[$(date +%Y%m%d-%H%M%S)] PHP-FPM Started."
-fi
-
-# 容器保活
-/web_server/keep

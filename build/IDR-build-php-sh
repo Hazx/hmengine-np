@@ -1,0 +1,89 @@
+#!/bin/bash
+
+## 组件版本
+export set_ver_php=8.3.11
+export set_ver_openssl=3.3.1
+export set_ver_libzip=1.10.1
+
+
+## 依赖组件
+echo "安装php依赖组件..."
+apt install -y zlib1g-dev libssl-dev libonig-dev libicu-dev sqlite3 libsqlite3-dev \
+               libxml2 libxml2-dev libcurl4-openssl-dev libjpeg-dev libpng-dev \
+               libwebp-dev libfreetype6-dev libmcrypt-dev libmhash-dev \
+               libc6-dev pkg-config
+sleep 6
+
+## 编译libzip
+echo "开始编译libzip..."
+cd /root/hazx/src
+tar zxvf libzip-${set_ver_libzip}.tar.gz
+cd libzip-${set_ver_libzip}
+mkdir build
+cd build
+cmake ..
+sleep 6
+make -j${set_make_threads:-2}
+make install
+mkdir -p /web_server/libzip/lib
+mkdir -p /web_server/libzip/exec
+cp lib/libzip.so /web_server/libzip/lib/
+cp src/zip* /web_server/libzip/exec/
+cp libzip.pc /web_server/libzip/
+sleep 6
+
+## 处理php源码
+cd /root/hazx/src
+rm -fr /root/hazx/src/openssl-${set_ver_openssl}
+tar zxvf openssl-${set_ver_openssl}.tar.gz
+tar zxvf php-${set_ver_php}.tar.gz
+cd php-${set_ver_php}
+
+## 配置php
+echo "配置php..."
+./configure \
+    --prefix=/web_server/php \
+    --with-config-file-path=/web_server/php/etc \
+    --enable-fpm \
+    --enable-bcmath \
+    --enable-ftp \
+    --enable-mbstring \
+    --enable-soap \
+    --enable-opcache \
+    --enable-intl \
+    --enable-mysqlnd \
+    --enable-calendar \
+    --enable-exif \
+    --enable-xml \
+    --enable-sockets=shared \
+    --enable-gd \
+    --with-gettext \
+    --with-openssl=/root/hazx/src/openssl-${set_ver_openssl} \
+    --with-zlib \
+    --with-curl \
+    --with-mhash \
+    --with-mysqli \
+    --with-pdo-mysql \
+    --with-libdir=lib64 \
+    --with-iconv \
+    --with-pdo_sqlite \
+    --with-sqlite3 \
+    --with-zip \
+    --with-libxml \
+    --without-pear \
+    --disable-fileinfo
+sleep 6
+
+## 编译php
+echo "开始编译php..."
+make -j${set_make_threads:-2}
+make install
+sleep 6
+
+## 处理配置文件
+rm -fr /web_server/php/etc
+mv /root/hazx/conf/php /web_server/php/etc
+
+
+
+
