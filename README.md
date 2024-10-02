@@ -1,6 +1,6 @@
 # HMengine-np
 
-HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以拿去参考使用。
+HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，可隐藏 Nginx 特征，用在对 Nginx 比较忌讳的环境中，`Server` 默认会显示为 `HMengine`，你也可以自行修改和打包镜像。
 
 对应镜像及版本：
 
