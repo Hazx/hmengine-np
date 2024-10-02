@@ -1,120 +1,140 @@
 #!/bin/bash
 
 ## 处理变量
-# NGINX_ONLY
-if [ ! -n "${NGINX_ONLY}" ];then
-    NGINX_ONLY=false
+# FE_ONLY
+if [ ! -n "${FE_ONLY}" ];then
+    FE_ONLY=false
 fi
-# NGINX_WORKER_PROCESSES
-if [ ! -n "${NGINX_WORKER_PROCESSES}" ];then
-    sed -i "s/##worker_processes##/worker_processes\ 1/" /web_server/nginx/conf/nginx.conf
-else
-    if [[ ${NGINX_WORKER_PROCESSES} == "auto" ]];then
-        sed -i "s/##worker_processes##/worker_processes\ auto/" /web_server/nginx/conf/nginx.conf
+if [[ $(head -n 1 /web_server/fe/conf/fe.conf) == "##hmengine_df_config##" ]];then
+    # FE_WORKER_PROCESSES
+    if [ ! -n "${FE_WORKER_PROCESSES}" ];then
+        sed -i "s/##worker_processes##/worker_processes\ 1/" /web_server/fe/conf/fe.conf
     else
-        sed -i "s/##worker_processes##/worker_processes\ ${NGINX_WORKER_PROCESSES}/" /web_server/nginx/conf/nginx.conf
+        if [[ ${FE_WORKER_PROCESSES} == "auto" ]];then
+            sed -i "s/##worker_processes##/worker_processes\ auto/" /web_server/fe/conf/fe.conf
+        else
+            sed -i "s/##worker_processes##/worker_processes\ ${FE_WORKER_PROCESSES}/" /web_server/fe/conf/fe.conf
+        fi
+    fi
+    # FE_GZIP
+    if [ ! -n "${FE_GZIP}" ];then
+        sed -i "s/##gzip##/gzip\ on/" /web_server/fe/conf/fe.conf
+    else
+        if [[ ${FE_GZIP} == "off" ]];then
+            sed -i "s/##gzip##/gzip\ off/" /web_server/fe/conf/fe.conf
+        else
+            sed -i "s/##gzip##/gzip\ on/" /web_server/fe/conf/fe.conf
+        fi
+    fi
+    # FE_PORT
+    if [ ! -n "${FE_PORT}" ];then
+        sed -i "s/##port##/80/" /web_server/fe/conf/fe.conf
+    else
+        sed -i "s/##port##/${FE_PORT}/" /web_server/fe/conf/fe.conf
+    fi
+
+    # PHP_PORT (FE Part)
+    if [ ! -n "${PHP_PORT}" ];then
+        sed -i "s/##php_port##/9000/" /web_server/fe/conf/fe.conf
+    else
+        sed -i "s/##php_port##/${PHP_PORT}/" /web_server/fe/conf/fe.conf
+    fi
+
+    # REQ_TIMEOUT (FE Part)
+    if [ ! -n "${REQ_TIMEOUT}" ];then
+        sed -i "s/##fe_client_body_timeout##/60/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_client_header_timeout##/60/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_fastcgi_connect_timeout##/60/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_fastcgi_send_timeout##/60/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_fastcgi_read_timeout##/60/" /web_server/fe/conf/fe.conf
+    else
+        sed -i "s/##fe_client_body_timeout##/${REQ_TIMEOUT}/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_client_header_timeout##/${REQ_TIMEOUT}/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_fastcgi_connect_timeout##/${REQ_TIMEOUT}/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_fastcgi_send_timeout##/${REQ_TIMEOUT}/" /web_server/fe/conf/fe.conf
+        sed -i "s/##fe_fastcgi_read_timeout##/${REQ_TIMEOUT}/" /web_server/fe/conf/fe.conf
     fi
 fi
-# NGINX_GZIP
-if [ ! -n "${NGINX_GZIP}" ];then
-    sed -i "s/##gzip##/gzip\ on/" /web_server/nginx/conf/nginx.conf
-else
-    if [[ ${NGINX_GZIP} == "off" ]];then
-        sed -i "s/##gzip##/gzip\ off/" /web_server/nginx/conf/nginx.conf
+if [[ $(head -n 1 /web_server/php/etc/php-fpm.d/www.conf) == ";;hmengine_df_config;;" ]];then
+    # PHP_PORT
+    if [ ! -n "${PHP_PORT}" ];then
+        sed -i "s/##php_port##/9000/" /web_server/php/etc/php-fpm.d/www.conf
     else
-        sed -i "s/##gzip##/gzip\ on/" /web_server/nginx/conf/nginx.conf
+        sed -i "s/##php_port##/${PHP_PORT}/" /web_server/php/etc/php-fpm.d/www.conf
+    fi
+    # PHP_MAX_CHILD
+    if [ ! -n "${PHP_MAX_CHILD}" ];then
+        sed -i "s/##php_max_children##/5/" /web_server/php/etc/php-fpm.d/www.conf
+    else
+        sed -i "s/##php_max_children##/${PHP_MAX_CHILD}/" /web_server/php/etc/php-fpm.d/www.conf
+    fi
+    # PHP_STR_SVC
+    if [ ! -n "${PHP_STR_SVC}" ];then
+        sed -i "s/##php_start_servers##/2/" /web_server/php/etc/php-fpm.d/www.conf
+    else
+        sed -i "s/##php_start_servers##/${PHP_STR_SVC}/" /web_server/php/etc/php-fpm.d/www.conf
+    fi
+    # PHP_MIN_SPARE
+    if [ ! -n "${PHP_MIN_SPARE}" ];then
+        sed -i "s/##php_min_spare_servers##/1/" /web_server/php/etc/php-fpm.d/www.conf
+    else
+        sed -i "s/##php_min_spare_servers##/${PHP_MIN_SPARE}/" /web_server/php/etc/php-fpm.d/www.conf
+    fi
+    # PHP_MAX_SPARE
+    if [ ! -n "${PHP_MAX_SPARE}" ];then
+        sed -i "s/##php_max_spare_servers##/5/" /web_server/php/etc/php-fpm.d/www.conf
+    else
+        sed -i "s/##php_max_spare_servers##/${PHP_MAX_SPARE}/" /web_server/php/etc/php-fpm.d/www.conf
+    fi
+    # REQ_TIMEOUT (PHP Part - www.conf)
+    if [ ! -n "${REQ_TIMEOUT}" ];then
+        sed -i "s/##php_request_terminate_timeout##/60/" /web_server/php/etc/php-fpm.d/www.conf
+    else
+        sed -i "s/##php_request_terminate_timeout##/${REQ_TIMEOUT}/" /web_server/php/etc/php-fpm.d/www.conf
     fi
 fi
-# NGINX_PORT
-if [ ! -n "${NGINX_PORT}" ];then
-    sed -i "s/##port##/80/" /web_server/nginx/conf/nginx.conf
-else
-    sed -i "s/##port##/${NGINX_PORT}/" /web_server/nginx/conf/nginx.conf
-fi
-# PHP_PORT
-if [ ! -n "${PHP_PORT}" ];then
-    sed -i "s/##php_port##/9000/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##php_port##/9000/" /web_server/php/etc/php-fpm.d/www.conf
-else
-    sed -i "s/##php_port##/${PHP_PORT}/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##php_port##/${PHP_PORT}/" /web_server/php/etc/php-fpm.d/www.conf
-fi
-# PHP_MAX_CHILD
-if [ ! -n "${PHP_MAX_CHILD}" ];then
-    sed -i "s/##php_max_children##/5/" /web_server/php/etc/php-fpm.d/www.conf
-else
-    sed -i "s/##php_max_children##/${PHP_MAX_CHILD}/" /web_server/php/etc/php-fpm.d/www.conf
-fi
-# PHP_STR_SVC
-if [ ! -n "${PHP_STR_SVC}" ];then
-    sed -i "s/##php_start_servers##/2/" /web_server/php/etc/php-fpm.d/www.conf
-else
-    sed -i "s/##php_start_servers##/${PHP_STR_SVC}/" /web_server/php/etc/php-fpm.d/www.conf
-fi
-# PHP_MIN_SPARE
-if [ ! -n "${PHP_MIN_SPARE}" ];then
-    sed -i "s/##php_min_spare_servers##/1/" /web_server/php/etc/php-fpm.d/www.conf
-else
-    sed -i "s/##php_min_spare_servers##/${PHP_MIN_SPARE}/" /web_server/php/etc/php-fpm.d/www.conf
-fi
-# PHP_MAX_SPARE
-if [ ! -n "${PHP_MAX_SPARE}" ];then
-    sed -i "s/##php_max_spare_servers##/5/" /web_server/php/etc/php-fpm.d/www.conf
-else
-    sed -i "s/##php_max_spare_servers##/${PHP_MAX_SPARE}/" /web_server/php/etc/php-fpm.d/www.conf
-fi
-# PHP_MEM_LIMIT
-if [ ! -n "${PHP_MEM_LIMIT}" ];then
-    sed -i "s/##php_memory_limit##/256M/" /web_server/php/etc/php.ini
-else
-    sed -i "s/##php_memory_limit##/${PHP_MEM_LIMIT}/" /web_server/php/etc/php.ini
-fi
-# PHP_MAX_POST
-if [ ! -n "${PHP_MAX_POST}" ];then
-    sed -i "s/##php_post_max_size##/8M/" /web_server/php/etc/php.ini
-else
-    sed -i "s/##php_post_max_size##/${PHP_MAX_POST}/" /web_server/php/etc/php.ini
-fi
-# PHP_MAX_UPLOAD
-if [ ! -n "${PHP_MAX_UPLOAD}" ];then
-    sed -i "s/##php_upload_max_filesize##/64M/" /web_server/php/etc/php.ini
-else
-    sed -i "s/##php_upload_max_filesize##/${PHP_MAX_UPLOAD}/" /web_server/php/etc/php.ini
-fi
-# REQ_TIMEOUT
-if [ ! -n "${REQ_TIMEOUT}" ];then
-    sed -i "s/##nginx_client_body_timeout##/60/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_client_header_timeout##/60/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_fastcgi_connect_timeout##/60/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_fastcgi_send_timeout##/60/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_fastcgi_read_timeout##/60/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##php_request_terminate_timeout##/60/" /web_server/php/etc/php-fpm.d/www.conf
-    sed -i "s/##php_max_execution_time##/60/" /web_server/php/etc/php.ini
-    sed -i "s/##php_max_input_time##/60/" /web_server/php/etc/php.ini
-    sed -i "s/##php_default_socket_timeout##/60/" /web_server/php/etc/php.ini
-else
-    sed -i "s/##nginx_client_body_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_client_header_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_fastcgi_connect_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_fastcgi_send_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##nginx_fastcgi_read_timeout##/${REQ_TIMEOUT}/" /web_server/nginx/conf/nginx.conf
-    sed -i "s/##php_request_terminate_timeout##/${REQ_TIMEOUT}/" /web_server/php/etc/php-fpm.d/www.conf
-    sed -i "s/##php_max_execution_time##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
-    sed -i "s/##php_max_input_time##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
-    sed -i "s/##php_default_socket_timeout##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
+if [[ $(head -n 1 /web_server/php/etc/php.ini) == ";;hmengine_df_config;;" ]];then
+    # PHP_MEM_LIMIT
+    if [ ! -n "${PHP_MEM_LIMIT}" ];then
+        sed -i "s/##php_memory_limit##/256M/" /web_server/php/etc/php.ini
+    else
+        sed -i "s/##php_memory_limit##/${PHP_MEM_LIMIT}/" /web_server/php/etc/php.ini
+    fi
+    # PHP_MAX_POST
+    if [ ! -n "${PHP_MAX_POST}" ];then
+        sed -i "s/##php_post_max_size##/8M/" /web_server/php/etc/php.ini
+    else
+        sed -i "s/##php_post_max_size##/${PHP_MAX_POST}/" /web_server/php/etc/php.ini
+    fi
+    # PHP_MAX_UPLOAD
+    if [ ! -n "${PHP_MAX_UPLOAD}" ];then
+        sed -i "s/##php_upload_max_filesize##/64M/" /web_server/php/etc/php.ini
+    else
+        sed -i "s/##php_upload_max_filesize##/${PHP_MAX_UPLOAD}/" /web_server/php/etc/php.ini
+    fi
+    # REQ_TIMEOUT (PHP Part - php.ini)
+    if [ ! -n "${REQ_TIMEOUT}" ];then
+        sed -i "s/##php_max_execution_time##/60/" /web_server/php/etc/php.ini
+        sed -i "s/##php_max_input_time##/60/" /web_server/php/etc/php.ini
+        sed -i "s/##php_default_socket_timeout##/60/" /web_server/php/etc/php.ini
+    else
+        sed -i "s/##php_max_execution_time##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
+        sed -i "s/##php_max_input_time##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
+        sed -i "s/##php_default_socket_timeout##/${REQ_TIMEOUT}/" /web_server/php/etc/php.ini
+    fi
 fi
 
 
 ## 判断存在并删除pid
-if [ -e "/web_server/logs/nginx.pid" ];then
-    rm -f /web_server/logs/nginx.pid
+if [ -e "/web_server/logs/fe.pid" ];then
+    rm -f /web_server/logs/fe.pid
 fi
 if [ -e "/web_server/logs/php-fpm.pid" ];then
     rm -f /web_server/logs/php-fpm.pid
 fi
 
 ## 启动 PHP8
-if [[ ${NGINX_ONLY} == false ]];then
+if [[ ${FE_ONLY} == false ]];then
     /web_server/php/sbin/php-fpm --daemonize -R \
         --fpm-config /web_server/php/etc/php-fpm.conf \
         --pid /web_server/logs/php-fpm.pid
@@ -125,11 +145,11 @@ if [[ ${NGINX_ONLY} == false ]];then
     fi
 fi
 
-## 启动 Nginx
-echo "[$(date +%Y%m%d-%H%M%S)] Nginx Starting."
-cd /web_server/nginx
-sbin/hmengine-n -c conf/nginx.conf -g "daemon off;"
+## 启动 Front-End
+echo "[$(date +%Y%m%d-%H%M%S)] Front-End Starting."
+cd /web_server/fe
+sbin/fe -c conf/fe.conf -g "daemon off;"
 if [ "$?" != 0 ] ; then
-    echo "[$(date +%Y%m%d-%H%M%S)] Nginx Start Failed."
+    echo "[$(date +%Y%m%d-%H%M%S)] Front-End Start Failed."
     sleep 10
 fi

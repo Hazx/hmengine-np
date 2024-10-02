@@ -34,7 +34,7 @@ else
     exit
 fi
 apt update -y
-apt upgrade -y
+# apt upgrade -y
 
 ## 安装php运行依赖
 echo "安装php运行依赖..."
@@ -54,7 +54,7 @@ rm -fr /web_server/libzip
 ldconfig
 
 ## 配置权限
-chmod a+x /web_server/nginx/sbin/hmengine-n
+chmod a+x /web_server/fe/sbin/fe
 chmod a+x /web_server/php/sbin/php-fpm
 chmod a+x /web_server/webserver.sh
 

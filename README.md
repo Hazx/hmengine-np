@@ -4,8 +4,8 @@ HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 
 对应镜像及版本：
 
-- `hazx/hmengine-np:3.0`
-- `hazx/hmengine-np:3.0-arm`
+- `hazx/hmengine-np:3.1`
+- `hazx/hmengine-np:3.1-arm`
 
 
 # 目录说明
@@ -17,19 +17,19 @@ HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 # 组件版本
 
 - Nginx：1.26.2
-- PHP：8.3.11
-- OpenSSL：3.3.1
+- PHP：8.3.12
+- OpenSSL：3.3.2
 - PCRE：8.45
 - Zlib：1.3.1
-- Libzip：1.10.1
+- Libzip：1.11.1
 
 # 使用镜像
 
-你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:3.0`（ARM64 平台使用 `3.0-arm`），你也可以参照 [编译与打包](#编译与打包) 部分的说明自行编译打包镜像。
+你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:3.1`（ARM64 平台使用 `3.1-arm`），你也可以参照 [编译与打包](#编译与打包) 部分的说明自行编译打包镜像。
 
 ## 需要做映射的内部路径
 
-- Nginx 配置目录：`/web_server/nginx/conf`
+- Nginx 配置目录：`/web_server/fe/conf`
 - PHP 配置目录：`/web_server/php/etc`
 - WEB 文件目录：`/web_server/html`（非必须设定此路径，依 Nginx 的配置文件而定）
 - 日志文件目录：`/web_server/logs`（非必须设定此路径，依 Nginx 及 PHP 的配置文件而定）
@@ -49,23 +49,23 @@ HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，如果你有需要可以�
 ```shell
 docker run -d \
     -p 80:80 \
-    -v /opt/hmengine-np/example/nginx:/web_server/nginx/conf \
+    -v /opt/hmengine-np/example/fe:/web_server/fe/conf \
     -v /opt/hmengine-np/example/php:/web_server/php/etc \
     -v /opt/hmengine-np/example/website:/web_server/html \
     -v /opt/hmengine-np/example/logs:/web_server/logs \
     --name web_server \
     --restart unless-stopped \
-    hazx/hmengine-np:3.0
+    hazx/hmengine-np:3.1
 ```
 
 ## 环境变量
 
 环境变量 | 默认值 | 参数值 | 功能说明
 ---|---|---|---
-NGINX_ONLY | false | false / true | 只启动 Nginx
-NGINX_WORKER_PROCESSES | 1 | auto / 数字 | Nginx Worker 数量
-NGINX_GZIP | on | on / off | Gzip 压缩
-NGINX_PORT | 80 | 数字 | WEB 端口
+FE_ONLY | false | false / true | 只启动 Nginx
+FE_WORKER_PROCESSES | 1 | auto / 数字 | Nginx Worker 数量
+FE_GZIP | on | on / off | Gzip 压缩
+FE_PORT | 80 | 数字 | WEB 端口
 PHP_PORT | 9000 | 数字 | PHP 工作端口
 PHP_MAX_CHILD | 5 | 数字 | PHP 最大进程数
 PHP_STR_SVC | 2 | 数字 | PHP 初始化进程数
