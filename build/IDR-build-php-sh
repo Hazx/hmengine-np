@@ -1,9 +1,10 @@
 #!/bin/bash
 
 ## 组件版本
-export set_ver_php=8.3.12
-export set_ver_openssl=3.3.2
-export set_ver_libzip=1.11.1
+export set_ver_php=8.3.16
+export set_ver_openssl=3.4.0
+export set_ver_libzip=1.11.2
+export set_ver_phpex_redis=6.0.2
 
 
 ## 依赖组件
@@ -72,12 +73,24 @@ echo "配置php..."
     --with-sqlite3 \
     --with-zip \
     --with-libxml \
-    --without-pear \
+    --with-pear \
     --disable-fileinfo
 sleep 6
 
 ## 编译php
 echo "开始编译php..."
+make -j${set_make_threads:-2}
+make install
+sleep 6
+
+## 编译安装 Reids 扩展
+cd /root/hazx/src
+tar xvf redis-${set_ver_phpex_redis}.tgz
+cd redis-${set_ver_phpex_redis}
+/web_server/php/bin/phpize
+sleep 6
+./configure --with-php-config=/web_server/php/bin/php-config
+sleep 6
 make -j${set_make_threads:-2}
 make install
 sleep 6

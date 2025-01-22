@@ -4,8 +4,8 @@ HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，可隐藏 Nginx 特征，
 
 对应镜像及版本：
 
-- `hazx/hmengine-np:3.1`
-- `hazx/hmengine-np:3.1-arm`
+- `hazx/hmengine-np:3.2`
+- `hazx/hmengine-np:3.2-arm`
 
 
 # 目录说明
@@ -17,15 +17,15 @@ HMengine-np 是一个 Nginx + PHP8 的 Docker 镜像，可隐藏 Nginx 特征，
 # 组件版本
 
 - Nginx：1.26.2
-- PHP：8.3.12
-- OpenSSL：3.3.2
-- PCRE：8.45
+- PHP：8.3.16
+- OpenSSL：3.4.0
 - Zlib：1.3.1
-- Libzip：1.11.1
+- Libzip：1.11.2
+- PHP扩展-Redis：6.0.2
 
 # 使用镜像
 
-你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:3.1`（ARM64 平台使用 `3.1-arm`），你也可以参照 [编译与打包](#编译与打包) 部分的说明自行编译打包镜像。
+你可以直接下载使用我编译好的镜像 `docker pull hazx/hmengine-np:3.2`（ARM64 平台使用 `3.2-arm`），你也可以参照 [编译与打包](#编译与打包) 部分的说明自行编译打包镜像。
 
 ## 需要做映射的内部路径
 
@@ -55,7 +55,7 @@ docker run -d \
     -v /opt/hmengine-np/example/logs:/web_server/logs \
     --name web_server \
     --restart unless-stopped \
-    hazx/hmengine-np:3.1
+    hazx/hmengine-np:3.2
 ```
 
 ## 环境变量
@@ -66,7 +66,7 @@ FE_ONLY | false | false / true | 只启动 Nginx
 FE_WORKER_PROCESSES | 1 | auto / 数字 | Nginx Worker 数量
 FE_GZIP | on | on / off | Gzip 压缩
 FE_PORT | 80 | 数字 | WEB 端口
-PHP_PORT | 9000 | 数字 | PHP 工作端口
+PHP_DEBUG | false | false / true | PHP 调试（直接在页面中输出警告和错误信息）
 PHP_MAX_CHILD | 5 | 数字 | PHP 最大进程数
 PHP_STR_SVC | 2 | 数字 | PHP 初始化进程数
 PHP_MIN_SPARE | 1 | 数字 | PHP 最小空闲进程数
@@ -77,6 +77,10 @@ PHP_MAX_UPLOAD | 64M | 数字+容量单位 | PHP 上传大小限制
 REQ_TIMEOUT | 60 | 数字 | 请求超时时间·秒（Nginx、PHP 所有相关参数）
 
 *环境变量仅在使用 Nginx 及 PHP 相应自带的默认配置文件且首次启动时生效。*
+
+## 默认情况下被禁用的 PHP 函数
+
+dl、eval、assert、exec、popen、system、passthru、shell_exec、escapeshellarg、escapeshellcmd、proc_close、proc_open
 
 
 # 编译与打包
@@ -109,7 +113,7 @@ bash build.sh 8
 
 ```shell
 ./configure \
-    --prefix=/web_server/nginx \
+    --prefix=/web_server/fe \
     --with-openssl=/path/to/openssl \
     --with-zlib=/path/to/zlib \
     --with-http_ssl_module \
@@ -155,7 +159,7 @@ bash build.sh 8
     --with-sqlite3 \
     --with-zip \
     --with-libxml \
-    --without-pear \
+    --with-pear \
     --disable-fileinfo
 ```
 

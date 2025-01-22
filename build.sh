@@ -1,15 +1,16 @@
 #!/bin/bash
 
 ## 源码编译-源码来源
-# http://nginx.org/en/download.html
+# https://nginx.org/en/download.html
 # https://www.openssl.org/source/
 # https://www.zlib.net/
 # https://www.php.net/downloads.php
 # https://libzip.org/download/
+# https://pecl.php.net/package/redis
 
 docker_path=hazx
 docker_img=hmengine-np
-docker_tag=3.1
+docker_tag=3.2
 docker_base=ubuntu:jammy-20240911.1
 ## 编译线程数
 make_threads=${1:-2}

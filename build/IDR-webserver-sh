@@ -33,13 +33,6 @@ if [[ $(head -n 1 /web_server/fe/conf/fe.conf) == "##hmengine_df_config##" ]];th
         sed -i "s/##port##/${FE_PORT}/" /web_server/fe/conf/fe.conf
     fi
 
-    # PHP_PORT (FE Part)
-    if [ ! -n "${PHP_PORT}" ];then
-        sed -i "s/##php_port##/9000/" /web_server/fe/conf/fe.conf
-    else
-        sed -i "s/##php_port##/${PHP_PORT}/" /web_server/fe/conf/fe.conf
-    fi
-
     # REQ_TIMEOUT (FE Part)
     if [ ! -n "${REQ_TIMEOUT}" ];then
         sed -i "s/##fe_client_body_timeout##/60/" /web_server/fe/conf/fe.conf
@@ -56,12 +49,6 @@ if [[ $(head -n 1 /web_server/fe/conf/fe.conf) == "##hmengine_df_config##" ]];th
     fi
 fi
 if [[ $(head -n 1 /web_server/php/etc/php-fpm.d/www.conf) == ";;hmengine_df_config;;" ]];then
-    # PHP_PORT
-    if [ ! -n "${PHP_PORT}" ];then
-        sed -i "s/##php_port##/9000/" /web_server/php/etc/php-fpm.d/www.conf
-    else
-        sed -i "s/##php_port##/${PHP_PORT}/" /web_server/php/etc/php-fpm.d/www.conf
-    fi
     # PHP_MAX_CHILD
     if [ ! -n "${PHP_MAX_CHILD}" ];then
         sed -i "s/##php_max_children##/5/" /web_server/php/etc/php-fpm.d/www.conf
@@ -94,6 +81,16 @@ if [[ $(head -n 1 /web_server/php/etc/php-fpm.d/www.conf) == ";;hmengine_df_conf
     fi
 fi
 if [[ $(head -n 1 /web_server/php/etc/php.ini) == ";;hmengine_df_config;;" ]];then
+    # PHP_DEBUG
+    if [ ! -n "${PHP_DEBUG}" ];then
+        sed -i "s/##php_debug##/Off/" /web_server/php/etc/php.ini
+    else
+        if [[ ${PHP_DEBUG} == "true" ]];then
+            sed -i "s/##php_debug##/On/" /web_server/php/etc/php.ini
+        else
+            sed -i "s/##php_debug##/Off/" /web_server/php/etc/php.ini
+        fi
+    fi
     # PHP_MEM_LIMIT
     if [ ! -n "${PHP_MEM_LIMIT}" ];then
         sed -i "s/##php_memory_limit##/256M/" /web_server/php/etc/php.ini
@@ -146,10 +143,13 @@ if [[ ${FE_ONLY} == false ]];then
 fi
 
 ## 启动 Front-End
-echo "[$(date +%Y%m%d-%H%M%S)] Front-End Starting."
 cd /web_server/fe
-sbin/fe -c conf/fe.conf -g "daemon off;"
+sbin/fe -c conf/fe.conf -g "daemon on;"
 if [ "$?" != 0 ] ; then
     echo "[$(date +%Y%m%d-%H%M%S)] Front-End Start Failed."
-    sleep 10
+else
+    echo "[$(date +%Y%m%d-%H%M%S)] Front-End Started."
 fi
+
+## 容器保活
+tail -f /dev/null

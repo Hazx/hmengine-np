@@ -2,7 +2,7 @@
 
 ## 组件版本
 export set_ver_nginx=1.26.2
-export set_ver_openssl=3.3.2
+export set_ver_openssl=3.4.0
 export set_ver_zlib=1.3.1
 
 
